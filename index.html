@@ -306,6 +306,153 @@
             text-shadow: 0 0 10px var(--accent), 0 0 20px rgba(0, 255, 136, 0.5);
         }
 
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            z-index: 10;
+        }
+
+        .scroll-text {
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            color: var(--accent);
+            text-transform: uppercase;
+            font-weight: 700;
+            position: relative;
+            min-height: 1.2em;
+        }
+
+        .scroll-text::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 0;
+            background: rgba(0, 255, 136, 0.3);
+            animation: scanReveal 3s ease-in-out infinite;
+        }
+
+        .scroll-text::after {
+            content: '';
+            position: absolute;
+            right: -0.5rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--accent);
+            animation: blink 1s ease-in-out infinite;
+        }
+
+        @keyframes scanReveal {
+            0%, 100% {
+                width: 0;
+            }
+            30%, 70% {
+                width: 100%;
+            }
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .scroll-arrow-container {
+            position: relative;
+            height: 40px;
+            width: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scroll-arrow {
+            position: absolute;
+            width: 2px;
+            height: 35px;
+            background: linear-gradient(180deg, var(--accent) 0%, transparent 100%);
+            animation: scrollFloatPulse 2.5s ease-in-out infinite;
+        }
+
+        .scroll-arrow::before,
+        .scroll-arrow::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 2px;
+            background: var(--accent);
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .scroll-arrow::before {
+            bottom: -2px;
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
+            animation: arrowPulse 2.5s ease-in-out infinite;
+        }
+
+        .scroll-arrow::after {
+            bottom: -6px;
+            opacity: 0;
+            animation: arrowPulseFade 2.5s ease-in-out infinite;
+        }
+
+        @keyframes scrollFloatPulse {
+            0%, 20% {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+            30%, 70% {
+                opacity: 1;
+            }
+            80%, 100% {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+        }
+
+        @keyframes arrowPulse {
+            0%, 20% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(0);
+            }
+            40%, 60% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(3px);
+            }
+            80%, 100% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(6px);
+            }
+        }
+
+        @keyframes arrowPulseFade {
+            0%, 20% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(0);
+            }
+            50%, 65% {
+                opacity: 0.6;
+                transform: translateX(-50%) translateY(3px);
+            }
+            80%, 100% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(6px);
+            }
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .nav {
@@ -384,6 +531,12 @@
             <h1>READ THIS</h1>
             <p class="hero-tag" style="margin-top: 1rem; font-size: 0.75rem;">— V0ID</p>
             <p style="margin-top: 3rem;">I used to think loneliness was code I could debug. It wasn't.</p>
+        </div>
+        <div class="scroll-indicator">
+            <span class="scroll-text">the story awaits below</span>
+            <div class="scroll-arrow-container">
+                <div class="scroll-arrow"></div>
+            </div>
         </div>
     </section>
 
