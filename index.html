@@ -3,757 +3,471 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Special Surprise...</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:ital,wght@1,600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <title>V0ID - A Story Nobody Asks For</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #0d0c14;
-            --bg-2: #161525;
-            --accent: #ffb7c5;
-            --accent-2: #ffe0e8;
-            --accent-3: #ffd6a5;
-            --text: #f9f9ff;
-            --muted: #c7c8d9;
-            --card: rgba(255, 255, 255, 0.05);
-            --stroke: rgba(255, 255, 255, 0.1);
-        }
-
-        * { box-sizing: border-box; }
-
-        body {
+        * {
             margin: 0;
             padding: 0;
-            background: radial-gradient(circle at 20% 20%, rgba(246, 193, 119, 0.08), transparent 30%),
-                        radial-gradient(circle at 80% 0%, rgba(255, 216, 168, 0.08), transparent 35%),
-                        linear-gradient(140deg, var(--bg) 0%, var(--bg-2) 55%, #0b0e15 100%);
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0a0a0a;
+            --bg-dark: #050505;
+            --accent: #00ff88;
+            --accent-dim: rgba(0, 255, 136, 0.2);
+            --accent-glow: rgba(0, 255, 136, 0.4);
+            --text: #ffffff;
+            --text-dim: #888888;
+            --border: rgba(0, 255, 136, 0.1);
+            --font-body: 'Space Grotesk', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --radius: 4px;
+            --container: 1000px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: linear-gradient(135deg, var(--bg) 0%, var(--bg-dark) 100%);
             color: var(--text);
-            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
             overflow-x: hidden;
-            min-height: 100vh;
-            position: relative;
         }
 
-        /* Ambient floating color blobs */
-        .ambient {
+        /* Scan lines effect */
+        body::before {
+            content: '';
             position: fixed;
-            inset: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(0deg, rgba(0, 255, 136, 0.02) 0px, rgba(0, 255, 136, 0.02) 1px, transparent 1px, transparent 2px);
             pointer-events: none;
-            z-index: 0;
-            filter: blur(70px);
+            z-index: 1;
         }
 
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0.35;
-            animation: float 18s ease-in-out infinite;
-            mix-blend-mode: screen;
-        }
-
-        .orb.one { width: 320px; height: 320px; background: #ffb7c5; top: 10%; left: 12%; }
-        .orb.two { width: 420px; height: 420px; background: #b6c6ff; top: 30%; right: 10%; animation-duration: 22s; }
-        .orb.three { width: 260px; height: 260px; background: #ffd6a5; bottom: 10%; left: 20%; animation-duration: 26s; }
-
-        @keyframes float {
-            0%,100% { transform: translateY(0) translateX(0) scale(1); }
-            50% { transform: translateY(-22px) translateX(16px) scale(1.04); }
-        }
-
-        /* Initial Gift Box Screen */
-        #gift-screen {
+        /* Navigation */
+        .nav {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100vh;
+            top: 0;
+            left: 0;
+            right: 0;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            background: rgba(13, 16, 23, 0.92);
-            backdrop-filter: blur(8px);
+            padding: 1.5rem 3rem;
+            background: rgba(5, 5, 5, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid transparent;
             z-index: 100;
-            transition: opacity 0.9s ease;
-            text-align: center;
-            padding: 32px;
+            transition: all 0.3s ease;
         }
 
-        .gift-btn {
-            font-size: 4.5rem;
+        .nav.scrolled {
+            border-bottom-color: rgba(0, 255, 136, 0.15);
+        }
+
+        .nav-logo {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.3em;
+            color: var(--accent);
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--accent);
             cursor: pointer;
-            background: none;
-            border: none;
-            transition: transform 0.25s, filter 0.25s;
-            filter: drop-shadow(0 10px 25px rgba(0,0,0,0.35));
         }
 
-        .gift-btn:hover { transform: translateY(-6px) scale(1.04); filter: drop-shadow(0 14px 30px rgba(0,0,0,0.4)); }
+        .nav-logo:hover {
+            text-shadow: 0 0 20px var(--accent);
+            transition: text-shadow 0.3s ease;
+        }
 
-        /* Main Content Screen (Hidden Initially) */
-        #main-content {
-            display: none;
-            padding: 60px 22px 80px;
-            max-width: 1100px;
-            margin: 0 auto;
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            font-family: var(--font-body);
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--accent);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            margin-top: 60px;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.01) 0 2px, transparent 2px 6px);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            filter: blur(80px);
+            opacity: 0.4;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
             text-align: center;
-            opacity: 0;
-            animation: fadeIn 1.3s forwards;
+            max-width: 850px;
+            padding: 0 2rem;
+        }
+
+        .hero h1 {
+            font-family: var(--font-mono);
+            font-size: clamp(4rem, 10vw, 8rem);
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 30px var(--accent), 0 0 60px rgba(0, 255, 136, 0.2);
+            animation: fadeInDown 0.8s ease;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-tag {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            letter-spacing: 0.3em;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease 0.1s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        /* Story Section */
+        #story {
+            padding: 6rem 2rem;
+            max-width: 850px;
+            margin: 0 auto;
             position: relative;
             z-index: 2;
         }
 
-        @keyframes fadeIn { to { opacity: 1; } }
-
-        h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2.6rem, 4.8vw, 3.6rem);
-            color: var(--accent-2);
-            text-shadow: 0 0 12px rgba(246, 193, 119, 0.3);
-            margin: 14px 0 10px;
+        .story-text {
+            font-size: 1rem;
+            color: var(--text-dim);
+            line-height: 1.9;
+            margin-bottom: 2.5rem;
+            opacity: 0;
+            animation: slideIn 0.8s ease forwards;
         }
 
-        .reveal { opacity: 0; transform: translateY(14px) scale(0.99); transition: opacity 0.7s ease, transform 0.7s ease; }
-        .reveal.visible { opacity: 1; transform: translateY(0) scale(1); }
+        .story-text:nth-child(1) { animation-delay: 0s; }
+        .story-text:nth-child(2) { animation-delay: 0.1s; }
+        .story-text:nth-child(3) { animation-delay: 0.2s; }
+        .story-text:nth-child(4) { animation-delay: 0.3s; }
+        .story-text:nth-child(5) { animation-delay: 0.4s; }
+        .story-text:nth-child(6) { animation-delay: 0.5s; }
+        .story-text:nth-child(7) { animation-delay: 0.6s; }
+        .story-text:nth-child(8) { animation-delay: 0.7s; }
 
-        h3 {
-            font-family: 'Playfair Display', serif;
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .story-text strong {
             color: var(--accent);
-            letter-spacing: 0.4px;
-        }
-
-        .subtitle {
-            max-width: 760px;
-            margin: 10px auto 28px;
-            color: var(--muted);
-            line-height: 1.7;
-            font-size: 1.05rem;
-        }
-
-        .pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 18px;
-            border-radius: 999px;
-            background: rgba(255, 158, 199, 0.12);
-            border: 1px solid rgba(255, 158, 199, 0.25);
-            color: var(--accent-2);
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-        }
-
-        .hero-card {
-            background: var(--card);
-            border: 1px solid var(--stroke);
-            border-radius: 18px;
-            padding: 26px;
-            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-card::before {
-            content: "";
-            position: absolute;
-            inset: -1px;
-            background: linear-gradient(120deg, rgba(255, 183, 197, 0.18), rgba(182, 198, 255, 0.14), rgba(255, 214, 165, 0.16));
-            border-radius: 18px;
-            z-index: 0;
-            filter: blur(8px);
-        }
-
-        .hero-card-content { position: relative; z-index: 1; }
-        }
-
-        .hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin: 22px 0 6px; }
-
-        .btn {
-            border: none;
-            cursor: pointer;
-            border-radius: 14px;
-            padding: 12px 20px;
-            font-weight: 700;
-            font-family: 'Space Grotesk', sans-serif;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .btn-primary {
-            background: linear-gradient(120deg, var(--accent) 0%, #ffcfe0 50%, var(--accent-3) 100%);
-            color: #0d1017;
-            box-shadow: 0 10px 32px rgba(255, 183, 197, 0.35);
-        }
-
-        .btn-ghost {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            color: var(--text);
-        }
-
-        .btn:hover { transform: translateY(-3px); }
-
-        .mini-facts {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .mini-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 14px;
-            padding: 14px;
-            display: grid;
-            gap: 6px;
-            place-items: center;
-        }
-
-        .mini-card strong { color: var(--accent-2); font-size: 1.05rem; }
-        .mini-card span { color: var(--muted); font-size: 0.95rem; }
-
-        /* Typing effect container */
-        .typewriter {
-            font-size: 1.05rem;
-            line-height: 1.75;
-            margin: 30px auto 10px;
-            color: #f3f4ff;
-            min-height: 140px;
-            max-width: 820px;
-            text-align: left;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 16px 18px;
-            border-radius: 14px;
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
-        }
-
-        /* Sections */
-        .section-title { margin: 46px 0 14px; font-size: 1.8rem; }
-
-        .sparkle-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 14px;
-            text-align: left;
-        }
-
-        .sparkle-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 14px;
-            padding: 16px;
-            box-shadow: 0 10px 26px rgba(0, 0, 0, 0.26);
-        }
-
-        .sparkle-card h4 { margin: 6px 0; color: var(--accent); }
-        .sparkle-card p { color: var(--muted); line-height: 1.6; }
-
-        /* Timeline */
-        .timeline {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 14px;
-            text-align: left;
-        }
-
-        .time-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 14px;
-            padding: 14px 16px;
-        }
-
-        .time-card strong { color: var(--accent-2); font-size: 1.05rem; }
-        .time-card p { color: var(--muted); margin: 8px 0 0; line-height: 1.5; }
-
-        /* Photo Gallery Grid */
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .gallery figure {
-            margin: 0;
-            position: relative;
-            overflow: hidden;
-            border-radius: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.06));
-            box-shadow: 0 16px 38px rgba(0, 0, 0, 0.32);
-            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-        }
-
-        .gallery img {
-            width: 100%;
-            height: 230px;
-            object-fit: cover;
-            display: block;
-            filter: saturate(1.05);
-            transition: transform 0.35s ease;
-            /* Focus higher in the frame so faces stay visible */
-            object-position: 50% 30%;
-        }
-
-        .gallery figure::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.12), transparent 45%);
-            opacity: 0;
-            transition: opacity 0.35s ease;
-        }
-
-        .gallery figure:hover {
-            transform: translateY(-6px) scale(1.01);
-            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.38);
-            border-color: var(--accent);
-        }
-
-        .gallery figure:hover img { transform: scale(1.04); }
-        .gallery figure:hover::after { opacity: 1; }
-
-        .promise-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 12px;
-            text-align: left;
-            margin-top: 14px;
-        }
-
-        .promise-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 12px;
-            color: var(--muted);
-            line-height: 1.5;
-        }
-
-        .footer-note {
-            margin-top: 38px;
-            font-size: 0.9rem;
-            color: #9da0b8;
-        }
-
-        /* Lightbox viewer */
-        .lightbox {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.72);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.25s ease;
-            z-index: 120;
-            padding: 24px;
-        }
-
-        .lightbox img {
-            max-width: min(90vw, 980px);
-            max-height: 80vh;
-            border-radius: 14px;
-            box-shadow: 0 24px 60px rgba(0,0,0,0.6);
-            border: 1px solid rgba(255,255,255,0.18);
-        }
-
-        .lightbox.show { opacity: 1; pointer-events: all; }
-
-        /* Stepper reveal */
-        .story-nav {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            align-items: center;
-            margin: 12px auto 6px;
-            flex-wrap: wrap;
-        }
-
-        .progress-pill {
-            padding: 10px 16px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--muted);
             font-weight: 600;
-            letter-spacing: 0.2px;
         }
 
-        .step {
-            display: none;
-            opacity: 0;
-            transform: translateY(12px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
+        .reflection {
+            padding: 4rem 2rem;
+            max-width: 850px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+            margin-top: 3rem;
+            margin-bottom: 3rem;
         }
 
-        .step.visible {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
+        .reflection h2 {
+            font-size: 1.3rem;
+            color: var(--accent);
+            letter-spacing: 0.1em;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
         }
 
-        .btn[disabled] { opacity: 0.6; cursor: default; }
-
-        /* Floating ticker for extra energy */
-        .ticker {
-            position: fixed;
-            bottom: 18px;
-            left: 0;
-            width: 100%;
-            pointer-events: none;
-            z-index: 30;
-            overflow: hidden;
-            mask-image: linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+        .reflection p {
+            font-size: 1rem;
+            color: var(--text-dim);
+            line-height: 1.8;
         }
 
-        .ticker-track {
-            display: inline-flex;
-            align-items: center;
-            gap: 20px;
-            animation: ticker 24s linear infinite;
-            white-space: nowrap;
+        /* Footer */
+        footer {
+            padding: 4rem 2rem;
+            text-align: center;
+            background: var(--bg-dark);
+            border-top: 1px solid var(--border);
+            position: relative;
+            z-index: 2;
         }
 
-        .ticker span {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 9px 14px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--accent-2);
+        footer p {
+            font-size: 1rem;
+            color: var(--text-dim);
+            line-height: 1.8;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        footer .quote {
+            color: var(--accent);
             font-weight: 600;
-            letter-spacing: 0.3px;
-            box-shadow: 0 10px 28px rgba(0,0,0,0.35);
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            letter-spacing: 0.05em;
         }
 
-        @keyframes ticker {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav {
+                padding: 1rem 1.5rem;
+            }
+
+            .nav-logo {
+                font-size: 0.85rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .nav-link {
+                font-size: 0.65rem;
+            }
+
+            .hero {
+                margin-top: 50px;
+                padding: 1.5rem;
+            }
+
+            .hero h1 {
+                font-size: clamp(2.5rem, 8vw, 4rem);
+                margin-bottom: 1rem;
+            }
+
+            .hero p {
+                font-size: 0.95rem;
+            }
+
+            #story {
+                padding: 4rem 1.5rem;
+            }
+
+            .story-text {
+                font-size: 0.95rem;
+                margin-bottom: 2rem;
+            }
+
+            .reflection {
+                padding: 2.5rem 1.5rem;
+                margin: 2rem 1.5rem;
+            }
+
+            footer {
+                padding: 2.5rem 1.5rem;
+            }
         }
 
-        /* Soft starfield layer for gentle motion */
-        .stars {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .star {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            background: rgba(255, 216, 168, 0.8);
-            border-radius: 50%;
-            opacity: 0.7;
-            animation: twinkle 3.4s ease-in-out infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.6); opacity: 1; }
-        }
-
-        /* Floating hearts for a romantic layer */
-        .floating-hearts {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 1;
-            overflow: hidden;
-        }
-
-        .floating-hearts span {
-            position: absolute;
-            color: rgba(255, 183, 197, 0.6);
-            font-size: 18px;
-            animation: rise 12s linear infinite;
-            filter: drop-shadow(0 6px 14px rgba(255, 183, 197, 0.35));
-        }
-
-        .floating-hearts span:nth-child(2n) { color: rgba(255, 214, 165, 0.6); font-size: 16px; animation-duration: 14s; }
-        .floating-hearts span:nth-child(3n) { color: rgba(182, 198, 255, 0.5); font-size: 20px; animation-duration: 16s; }
-
-        @keyframes rise {
-            0% { transform: translateY(100vh) translateX(0) scale(1); opacity: 0; }
-            10% { opacity: 1; }
-            100% { transform: translateY(-20vh) translateX(-30px) scale(1.2); opacity: 0; }
-        }
-
-        @media (max-width: 720px) {
-            .hero-actions { flex-direction: column; }
-            .typewriter { text-align: left; }
-            .gallery img { height: 200px; }
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+                scroll-behavior: auto !important;
+            }
         }
     </style>
 </head>
+
 <body>
-
-    <div class="ambient" aria-hidden="true">
-        <div class="orb one"></div>
-        <div class="orb two"></div>
-        <div class="orb three"></div>
-    </div>
-
-    <div class="stars" aria-hidden="true" id="stars"></div>
-
-    <div class="floating-hearts" aria-hidden="true" id="floating-hearts">
-        <span>♥</span><span>♥</span><span>♥</span><span>♥</span><span>♥</span><span>♥</span>
-    </div>
-
-    <div class="ticker" aria-hidden="true">
-        <div class="ticker-track" id="ticker-track">
-            <span>Golden hour energy</span>
-            <span>Safe place for your soft heart</span>
-            <span>Keep telling your stories</span>
-            <span>Weird jokes always welcome</span>
-            <span>Victory laps for every tiny win</span>
-            <span>Playlists on standby</span>
-            <span>Snack runs at midnight</span>
-            <span>Pretty mind, huge heart</span>
-            <span>Soft, loud, loved</span>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-logo">V0ID</div>
+        <div class="nav-links">
+            <a href="#story" class="nav-link active">Read</a>
         </div>
-    </div>
+    </nav>
 
-    <div id="gift-screen">
-        <h2 style="color: #ffd8a8; font-family: 'Playfair Display'; margin-bottom: 16px;">Built this little moment for you...</h2>
-        <button class="gift-btn" onclick="openGift()">🎁</button>
-        <p style="margin-top: 16px; color: #cfd5e5;">Tap to unwrap</p>
-    </div>
-
-    <div id="main-content">
-        <div class="hero-card">
-            <div class="hero-card-content">
-                <div class="pill">Birthday mode: ON ✨</div>
-                <h1>Happy Birthday, brightest bestie</h1>
-                <p class="subtitle">You’re the spark, the sanity, and the soundtrack. Tonight is just us appreciating the way you make everything less boring.</p>
-                <div class="hero-actions">
-                    <button class="btn btn-primary" onclick="burstConfetti()">Make it sparkle</button>
-                    <button class="btn btn-ghost" onclick="document.getElementById('timeline').scrollIntoView({behavior:'smooth'});">Jump to memory lane</button>
-                </div>
-                <div class="mini-facts">
-                        <div class="mini-card"><strong>Glow</strong><span>Your smile flips any mood</span></div>
-                        <div class="mini-card"><strong>Bold</strong><span>You jump first, improvise later</span></div>
-                        <div class="mini-card"><strong>Real</strong><span>You’re my safest, loudest place</span></div>
-                </div>
-            </div>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <p class="hero-tag">A LETTER FROM</p>
+            <h1>V0ID</h1>
+            <p class="hero-tag" style="margin-top: 1rem; font-size: 0.75rem;">A CONFESSION IN CODE</p>
+            <p style="margin-top: 3rem;">I used to think loneliness was code I could debug. It wasn't.</p>
         </div>
+    </section>
 
-        <div class="typewriter" id="typed-text"></div>
+    <!-- Story Section -->
+    <section id="story">
+        <p class="story-text">
+            They say everyone has something. A spark, a passion, a person who makes them feel less invisible. I've been waiting for that for years—not because I'm special, but because it became a habit. A ritual. The dark ritual of hoping that being good at what you do would somehow translate to not feeling so profoundly alone.
+        </p>
 
-        <div class="story-nav">
-            <div class="progress-pill" id="progress-pill">Up next: Memory lane</div>
-            <button class="btn btn-primary" id="next-step-btn">Reveal next</button>
-        </div>
+        <p class="story-text">
+            I learned to code when I was nine. My parents thought it was a phase. By twelve, I knew more about networks than most of my teachers. By sixteen, I could disappear into systems like ghosts—untraceable, unseen, unnoticed. The irony wasn't lost on me: I could hide in the digital world perfectly, but I couldn't hide from myself. Still can't, actually.
+        </p>
 
-        <h3 class="section-title">Why you’re the best</h3>
-        <div class="sparkle-grid">
-            <div class="sparkle-card"><h4>Your laugh</h4><p>Instant mood flip. It should be bottled and sold.</p></div>
-            <div class="sparkle-card"><h4>Your soft heart</h4><p>You feel everything deeply and still show up for everyone.</p></div>
-            <div class="sparkle-card"><h4>Your courage</h4><p>Say yes first, build the parachute later. Classic you.</p></div>
-            <div class="sparkle-card"><h4>Your stories</h4><p>You narrate our days and turn random Tuesdays into lore.</p></div>
-        </div>
+        <p class="story-text">
+            The void isn't a metaphor for me. It's a physical place—the gap between knowing you're smart and believing you matter. The space where achievement means nothing because nobody's there to witness it. You can be the best at what you do and still feel like you're screaming into an empty room. <strong>That's what V0ID is.</strong>
+        </p>
 
-        <div class="step" data-label="Memory vault">
-            <h3 class="section-title">Memory vault 📸</h3>
-            <div class="gallery">
-                <figure class="reveal">
-                    <img src="./vidhya2.jpeg" alt="Us sharing a quiet laugh">
-                </figure>
-                <figure class="reveal">
-                    <img src="./vidhya3.png" alt="Candid fun moment">
-                </figure>
-            </div>
-        </div>
+        <p class="story-text">
+            Once, there was a person. Just one. They saw me—not the code monkey, not the hacker persona everyone else knew. They saw the part of me that was terrified of being alone forever. We talked about everything. They laughed at my terrible jokes. They called at 3 AM because I couldn't sleep. For a brief moment, I wasn't invisible.
+        </p>
 
-        <div class="step" data-label="Memory lane">
-            <h3 id="timeline" class="section-title">Little timeline of us</h3>
-            <div class="timeline">
-                <div class="time-card"><strong>First hello</strong><p>Two strangers, day-one chemistry. Instant inside jokes.</p></div>
-                <div class="time-card"><strong>All the giggles</strong><p>Late chats, ugly laughs, happy tears — undefeated playlist.</p></div>
-                <div class="time-card"><strong>Every adventure</strong><p>Groceries, road trips, random errands — all glow with you there.</p></div>
-                <div class="time-card"><strong>Right now</strong><p>Celebrating you and lining up whatever chaos comes next.</p></div>
-            </div>
-        </div>
+        <p class="story-text">
+            Then they left. People do. They said it wasn't personal, but everything is personal when you've been alone your entire life. The absence hit different. Suddenly, all those skills—the ability to infiltrate systems, to understand complex architectures—meant absolutely nothing because the one thing I couldn't hack was the human condition.
+        </p>
 
-        <div class="step" data-label="What I'm here for">
-            <h3 class="section-title">What I'm here for</h3>
-            <div class="promise-list">
-                <div class="promise-item">Celebrate every win, tiny to huge.</div>
-                <div class="promise-item">Keep the fun stocked: jokes, playlists, snack runs, bad dance breaks.</div>
-                <div class="promise-item">Listen to every ramble and guard your feelings on the tender days.</div>
-                <div class="promise-item">Stay honest and keep reminding you how sharp you are.</div>
-                <div class="promise-item">Handle the boring errands so you can stay in genius mode.</div>
-            </div>
-        </div>
+        <p class="story-text">
+            So I threw myself back into code. Deeper. Darker. If I couldn't fix my loneliness, at least I could build something that mattered, something that could last. Something that wouldn't leave. I created walls of logic and encryption, thinking maybe that would be enough. Spoiler: it wasn't.
+        </p>
 
-        <div class="step" data-label="Final note">
-            <p class="footer-note">Coded with a very full heart — Barath</p>
-        </div>
-    </div>
+        <p class="story-text">
+            <strong>Years later, I'm still here.</strong> Still writing code like it's poetry. Still waiting for someone who understands that the most talented people are often the loneliest because they see everything—including all the ways that people don't really connect. They think, they analyze, they feel too much, and somehow that makes them untouchable.
+        </p>
 
-    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true">
-        <img src="" alt="Expanded memory" id="lightbox-img">
-    </div>
+        <p class="story-text">
+            This page is the closest I get to talking about it. This confession in code and words, sent out to the void, hoping it echoes back. Knowing it probably won't. But at least I tried. At least there's a record that V0ID existed, that someone cared enough to write about how broken it all feels, and how despite everything, they're still trying.
+        </p>
+    </section>
+
+    <!-- Reflection -->
+    <section class="reflection">
+        <h2>If you've read this far...</h2>
+        <p>
+            Thanks. Seriously. There are things that get easier to say when you know someone, anyone, stopped long enough to listen. If you're reading this and you recognize the void—that empty space I'm talking about—know that you're not the only one in it. The loneliest people often make the most interesting things, build the strongest systems, think the deepest thoughts. That counts for something. <strong>You count for something.</strong>
+        </p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p class="quote">you are not v0id. you are a person. a real one.</p>
+    </footer>
 
     <script>
-        const paragraphs = [
-            "Happy birthday to the MVP of my highlight reel.",
-            "Your stories run laps around the clock and I love every rambling detail — keep talking, I’m still listening.",
-            "You debug life like code, then roast me while it compiles — elite combo.",
-            "Your heart is tender; I’m here to guard it, hype it, and slow down when the world gets too loud.",
-            "You make rooms lighter, ideas louder, and people feel like they belong there.",
-            "Proud of you. Grateful for you. Let’s keep stacking wins side by side."
-        ];
-
-        let paragraphIndex = 0;
-        let charIndex = 0;
-        let steps = [];
-        let stepIndex = 0;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            setupReveals();
-            setupLightbox();
-            setupStars();
-            setupTicker();
-            setupSteps();
-            setupHearts();
+        // Smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
         });
 
-        function openGift() {
-            burstConfetti();
-
-            const giftScreen = document.getElementById('gift-screen');
-            const mainContent = document.getElementById('main-content');
-            giftScreen.style.opacity = '0';
-            setTimeout(() => {
-                giftScreen.style.display = 'none';
-                mainContent.style.display = 'block';
-                setTimeout(typeWriter, 500);
-            }, 1000);
-        }
-
-        function burstConfetti() {
-            confetti({
-                particleCount: 180,
-                spread: 120,
-                origin: { y: 0.6 },
-                colors: ['#ff9ec7', '#ffffff', '#ffd700', '#9b8cff']
-            });
-        }
-
-        function setupReveals() {
-            const targets = document.querySelectorAll('.reveal');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.25 });
-
-            targets.forEach(el => observer.observe(el));
-        }
-
-        function setupLightbox() {
-            const lightbox = document.getElementById('lightbox');
-            const lightboxImg = document.getElementById('lightbox-img');
-            document.querySelectorAll('.gallery img').forEach(img => {
-                img.addEventListener('click', () => {
-                    lightboxImg.src = img.src;
-                    lightbox.classList.add('show');
-                });
-            });
-
-            lightbox.addEventListener('click', () => {
-                lightbox.classList.remove('show');
-                lightboxImg.src = '';
-            });
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') { lightbox.classList.remove('show'); lightboxImg.src = ''; }
-            });
-        }
-
-        // sprinkle small stars for ambient motion
-        function setupStars() {
-            const stars = document.getElementById('stars');
-            const starCount = 28;
-            for (let i = 0; i < starCount; i++) {
-                const s = document.createElement('div');
-                s.className = 'star';
-                s.style.left = Math.random() * 100 + '%';
-                s.style.top = Math.random() * 100 + '%';
-                s.style.animationDelay = (Math.random() * 3).toFixed(2) + 's';
-                s.style.animationDuration = (2.6 + Math.random() * 2).toFixed(2) + 's';
-                stars.appendChild(s);
-            }
-        }
-
-        // duplicate ticker items for seamless loop
-        function setupTicker() {
-            const track = document.getElementById('ticker-track');
-            track.innerHTML += track.innerHTML;
-        }
-
-        function setupHearts() {
-            const hearts = document.querySelectorAll('#floating-hearts span');
-            hearts.forEach((heart, idx) => {
-                heart.style.left = Math.random() * 100 + '%';
-                heart.style.animationDelay = (idx * 1.8) + 's';
-            });
-        }
-
-        function typeWriter() {
-            const typed = document.getElementById('typed-text');
-            if (paragraphIndex >= paragraphs.length) { return; }
-
-            const current = paragraphs[paragraphIndex];
-            if (charIndex < current.length) {
-                typed.innerHTML += current.charAt(charIndex);
-                charIndex++;
-                setTimeout(typeWriter, 35);
+        // Navbar scroll effect
+        const nav = document.querySelector('.nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
             } else {
-                typed.innerHTML += '<br><br>';
-                paragraphIndex++;
-                charIndex = 0;
-                setTimeout(typeWriter, 420);
+                nav.classList.remove('scrolled');
             }
-        }
+        });
 
-        // staged reveal for sections
-        function setupSteps() {
-            steps = Array.from(document.querySelectorAll('.step'));
-            const btn = document.getElementById('next-step-btn');
-            revealStep(btn);
-            btn.addEventListener('click', () => revealStep(btn));
-        }
+        // Active link update
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section[id]');
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
 
-        function updateProgress() {
-            const pill = document.getElementById('progress-pill');
-            if (!pill) { return; }
-            if (stepIndex >= steps.length) {
-                pill.textContent = 'Everything is open';
-            } else {
-                pill.textContent = 'Up next: ' + steps[stepIndex].dataset.label;
-            }
-        }
-
-        function revealStep(btn) {
-            if (stepIndex >= steps.length) { return; }
-            steps[stepIndex].classList.add('visible');
-            stepIndex++;
-            updateProgress();
-            if (stepIndex >= steps.length && btn) {
-                btn.textContent = 'All revealed ✨';
-                btn.disabled = true;
-            }
-        }
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
     </script>
 </body>
+
 </html>
